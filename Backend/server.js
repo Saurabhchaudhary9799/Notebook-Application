@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const AppError = require("./Utils/appError");
 const globalErrorHandler = require("./Controllers/errorController");
 const userRoute = require("./Routes/userRoutes");
+const noteRoute = require("./Routes/noteRoutes");
 
 dotenv.config();
 const app = express();
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 app.use("/api/v1/users", userRoute);
+app.use("/api/v1/notes", noteRoute);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this  server`), 404);
@@ -33,4 +35,13 @@ app.use(globalErrorHandler);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, (req, res) => {
   console.log(`Server is connected at ${PORT}`);
+});
+
+
+process.on('unhandledRejection', err => {
+  console.log('UNHANDLED REJECTION! 💥 Shutting down...');
+  console.log(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
 });
